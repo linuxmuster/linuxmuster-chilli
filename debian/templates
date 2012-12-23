@@ -14,3 +14,13 @@ Template: linuxmuster-chilli/ldap-pass
 Type: string
 Default: geheim
 Description: The password to query the ldap server. Can be found on the server in /etc/ldap/slapd.conf
+
+Template: linuxmuster-chilli/hs-network
+Type: string
+Default: 192.168.0.0
+Description: Network for the chillispot clients
+
+Template: linuxmuster-chilli/hs-netmask
+Type: string
+Default: 255.255.0.0
+Description: Netmask for the client side network

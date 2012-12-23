@@ -1,6 +1,0 @@
-876aa931ff218bf02d23dadf55371cd7  usr/share/doc/linuxmuster-chilli/changelog.gz
-fa85540392191952e1f1a730b936281b  usr/share/doc/linuxmuster-chilli/copyright
-e694e8715344bf2c653894be6c82cc01  var/lib/linuxmuster-chilli/tpl/etc/freeradius/clients.conf
-84075d6c1fcd44f7da8232c90d88ad1a  var/lib/linuxmuster-chilli/tpl/etc/freeradius/modules/ldap
-a0266ca8fdbe46f728d8504821c96ab7  var/lib/linuxmuster-chilli/tpl/etc/freeradius/sites-enabled/default
-5f67c91f59fdae237cddd051be4e6641  var/lib/linuxmuster-chilli/tpl/etc/ldap/ldap.conf

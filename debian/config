@@ -1,29 +1,26 @@
 #!/bin/sh
+
+CONFIGFILE=/etc/linuxmuster-chilli.conf
+
 set -e
 
 . /usr/share/debconf/confmodule
 
+# load config if exists
+if [ -e $CONFIGFILE ]; then
+    . $CONFIGFILE || true
 
-db_get linuxmuster-chilli/ldap-server
-if [ "$RET" ]; then
-    DEF=$RET
+    # config to debconf
+    db_set linuxmuster-chilli/ldap-server "$LDAP_SERVER"
+    db_set linuxmuster-chilli/base-dn "$BASEDN"
+    db_set linuxmuster-chilli/ldap-pass "$LDAP_PASS"
+    db_set linuxmuster-chilli/hs-network "$HS_NETWORK"
+    db_set linuxmuster-chilli/hs-netmask "$HS_NETMASK"
 fi
-db_set linuxmuster-chilli/ldap-server "$DEF"
+
 db_input high linuxmuster-chilli/ldap-server || true
-db_go || true
-
-db_get linuxmuster-chilli/base-dn
-if [ "$RET" ]; then
-    DEF=$RET
-fi
-db_set linuxmuster-chilli/base-dn "$DEF"
 db_input high linuxmuster-chilli/base-dn || true
-db_go || true
-
-db_get linuxmuster-chilli/ldap-pass
-if [ "$RET" ]; then
-    DEF=$RET
-fi
-db_set linuxmuster-chilli/ldap-pass "$DEF"
 db_input high linuxmuster-chilli/ldap-pass || true
+db_input high linuxmuster-chilli/hs-network || true
+db_input high linuxmuster-chilli/hs-netmask || true
 db_go || true

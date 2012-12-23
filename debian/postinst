@@ -1,11 +1,22 @@
 #!/bin/bash
 
+CONFIGFILE=/etc/linuxmuster-chilli.conf
+
 
 # Source debconf library.
 . /usr/share/debconf/confmodule
 
 db_version 2.0
 
+# create config if not exists
+if [ ! -e $CONFIGFILE ]; then
+    echo "# Config file for my linuxmuster-chillispot" > $CONFIGFILE
+    echo "LDAPSERVER=" >> $CONFIGFILE
+    echo "BASEDN=" >> $CONFIGFILE
+    echo "LDAP_PASS=" >> $CONFIGFILE
+    echo "HS_NETWORK=" >> $CONFIGFILE
+    echo "HS_NETMASK=" >> $CONFIGFILE
+fi
 
 db_get linuxmuster-chilli/ldap-server
 if [ "$RET" ]; then
@@ -22,6 +33,37 @@ if [ "$RET" ]; then
     LDAP_PASS=$RET;
 fi
 
+db_get linuxmuster-chilli/hs-network
+if [ "$RET" ]; then
+    HS_NETWORK=$RET;
+fi
+
+db_get linuxmuster-chilli/hs-netmask
+if [ "$RET" ]; then
+    HS_NETMASK=$RET;
+fi
+
+cp -a -f $CONFIGFILE $CONFIGFILE.tmp
+
+
+# Falls der Administrator einige Variablen geloscht
+# oder auskommentiert, aber sie dann uber Debconf
+# gesetzt hat, fuge sie dem Conffile wieder hinzu.
+#test -z "$FOO" || grep -Eq '^ *FOO=' $CONFIGFILE || \
+#    echo "FOO=" >> $CONFIGFILE
+#test -z "$BAR" || grep -Eq '^ *BAR=' $CONFIGFILE || \
+#    echo "BAR=" >> $CONFIGFILE
+
+sed -e "s/^ *LDAP_SERVER=.*/LDAP_SERVER=\"$LDAP_SERVER\"/" \
+    -e "s/^ *BASEDN=.*/BASEDN=\"$BASEDN\"/" \
+    -e "s/^ *LDAP_PASS=.*/LDAP_PASS=\"$LDAP_PASS\"/" \
+    -e "s/^ *HS_NETWORK=.*/HS_NETWORK=\"$HS_NETWORK\"/" \
+    -e "s/^ *HS_NETMASK=.*/HS_NETMASK=\"$HS_NETMASK\"/" \
+    < $CONFIGFILE > $CONFIGFILE.tmp
+
+mv -f $CONFIGFILE.tmp $CONFIGFILE
+exit 0
+
 SHARED_SECRET=`pwgen -s -n 20`
 
 echo "BASE DN: $BASEDN"
@@ -30,8 +72,16 @@ echo "LDAP_PASS: $LDAP_PASS"
 echo "SHARED_SECRET: $SHARED_SECRET"
 
 
+# install coovachilli
+dpkg -i /var/lib/linuxmuster-chilli/src/coova-chilli_1.3.0_i386.deb
+
+# copying www files to apache directory
+mkdir -p /var/www/hotspot/
+cp /etc/chilli/www/* /var/www/hotspot
+
 # patching configuration files
 echo "Patching configuration ..."
+
 cd /var/lib/linuxmuster-chilli/tpl
 
 find -type f | xargs -i -t sh -c \
@@ -45,8 +95,9 @@ find -type f | xargs -i -t sh -c \
 chown root.freerad /etc/freeradius/clients.conf
 chmod 640 /etc/freeradius/clients.conf
 
-/etc/init.d/freeradius restart
+chmod 755 /etc/chilli/ipup.sh
 
+/etc/init.d/freeradius restart
 
 # dh_installdeb will replace this with shell code automatically
 

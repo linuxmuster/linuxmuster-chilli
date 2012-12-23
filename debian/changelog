@@ -1,7 +1,9 @@
-linuxmuster-chilli (0.1.10) precise-testing; urgency=low
+linuxmuster-chilli (0.1.11) precise-testing; urgency=low
 
   * First commit to git
   * Installs an configures freeradius to authenticate against linuxmsuter.net
     server
+  * Added coovachilli deb
+  * Introduced config file for linuxmuster-chilli
 
- -- Frank Schiebel <frank@linuxmuster.net>  Sun, 23 Dec 2012 18:08:21 +0100
+ -- Frank Schiebel <frank@linuxmuster.net>  Sun, 23 Dec 2012 23:03:14 +0100
