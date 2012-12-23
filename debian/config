@@ -1,0 +1,29 @@
+#!/bin/sh
+set -e
+
+. /usr/share/debconf/confmodule
+
+
+db_get linuxmuster-chilli/ldap-server
+if [ "$RET" ]; then
+    DEF=$RET
+fi
+db_set linuxmuster-chilli/ldap-server "$DEF"
+db_input high linuxmuster-chilli/ldap-server || true
+db_go || true
+
+db_get linuxmuster-chilli/base-dn
+if [ "$RET" ]; then
+    DEF=$RET
+fi
+db_set linuxmuster-chilli/base-dn "$DEF"
+db_input high linuxmuster-chilli/base-dn || true
+db_go || true
+
+db_get linuxmuster-chilli/ldap-pass
+if [ "$RET" ]; then
+    DEF=$RET
+fi
+db_set linuxmuster-chilli/ldap-pass "$DEF"
+db_input high linuxmuster-chilli/ldap-pass || true
+db_go || true

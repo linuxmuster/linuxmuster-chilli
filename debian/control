@@ -1,0 +1,13 @@
+Source: linuxmuster-chilli
+Section: web
+Priority: optional
+Maintainer: Frank Schiebel <frank@linuxmuster.net>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.0
+
+Package: linuxmuster-chilli
+Section: web
+Priority: optional
+Architecture: i386
+Depends: apache2, freeradius, freeradius-ldap, pwgen
+Description: Turns an ubuntu 12.04.1 server into a captive portal with ldap auth for linuxmuster.net
