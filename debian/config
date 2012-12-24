@@ -11,11 +11,24 @@ if [ -e $CONFIGFILE ]; then
     . $CONFIGFILE || true
 
     # config to debconf
-    db_set linuxmuster-chilli/ldap-server "$LDAP_SERVER"
-    db_set linuxmuster-chilli/base-dn "$BASEDN"
-    db_set linuxmuster-chilli/ldap-pass "$LDAP_PASS"
-    db_set linuxmuster-chilli/hs-network "$HS_NETWORK"
-    db_set linuxmuster-chilli/hs-netmask "$HS_NETMASK"
+    if [ "$LDAP_SERVER" != "" ]; then
+        db_set linuxmuster-chilli/ldap-server "$LDAP_SERVER"
+    fi
+    if [ "$BASEDN" != "" ]; then
+        db_set linuxmuster-chilli/base-dn "$BASEDN"
+    fi
+    if [ "$LDAP_PASS" != "" ]; then
+        db_set linuxmuster-chilli/ldap-pass "$LDAP_PASS"
+    fi
+    if [ "$HS_NETWORK" != "" ]; then
+        db_set linuxmuster-chilli/hs-network "$HS_NETWORK"
+    fi
+    if [ "$HS_NETMASK" != "" ]; then
+        db_set linuxmuster-chilli/hs-netmask "$HS_NETMASK"
+    fi
+    if [ "$HS_NAMESERVERS" != "" ]; then
+        db_set linuxmuster-chilli/hs-nameservers "$HS_NAMESERVERS"
+    fi
 fi
 
 db_input high linuxmuster-chilli/ldap-server || true
@@ -23,4 +36,5 @@ db_input high linuxmuster-chilli/base-dn || true
 db_input high linuxmuster-chilli/ldap-pass || true
 db_input high linuxmuster-chilli/hs-network || true
 db_input high linuxmuster-chilli/hs-netmask || true
+db_input high linuxmuster-chilli/hs-nameservers || true
 db_go || true

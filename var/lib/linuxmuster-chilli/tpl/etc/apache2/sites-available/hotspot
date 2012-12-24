@@ -1,0 +1,29 @@
+NameVirtualHost @@hs_ip@@:443
+<VirtualHost @@hs_ip@@:443>
+        ServerAdmin hotpot@wireless.local
+        DocumentRoot "/var/www/hotspot"
+        ServerName "spot.linuxmuster.wifi"
+
+        <Directory "/var/www/hotspot/">
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+        </Directory>
+
+        ScriptAlias /cgi-bin/ /var/www/hotspot/cgi-bin/
+        <Directory "/var/www/hotspot/cgi-bin/">
+                AllowOverride None
+                Options ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+        ErrorLog /var/log/apache2/hotspot-error.log
+        LogLevel warn
+        CustomLog /var/log/apache2/hotspot-access.log combined
+
+        ServerSignature On
+        SSLEngine on
+        SSLCertificateFile /etc/apache2/ssl/apache.pem
+</VirtualHost>

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+debug=1
 CONFIGFILE=/etc/linuxmuster-chilli.conf
 
 
@@ -11,11 +13,12 @@ db_version 2.0
 # create config if not exists
 if [ ! -e $CONFIGFILE ]; then
     echo "# Config file for my linuxmuster-chillispot" > $CONFIGFILE
-    echo "LDAPSERVER=" >> $CONFIGFILE
+    echo "LDAP_SERVER=" >> $CONFIGFILE
     echo "BASEDN=" >> $CONFIGFILE
     echo "LDAP_PASS=" >> $CONFIGFILE
     echo "HS_NETWORK=" >> $CONFIGFILE
     echo "HS_NETMASK=" >> $CONFIGFILE
+    echo "HS_NAMESERVERS=" >> $CONFIGFILE
 fi
 
 db_get linuxmuster-chilli/ldap-server
@@ -43,40 +46,54 @@ if [ "$RET" ]; then
     HS_NETMASK=$RET;
 fi
 
+db_get linuxmuster-chilli/hs-nameservers
+if [ "$RET" ]; then
+    HS_NAMESERVERS=$RET;
+fi
+# new an deleted values to config
+test -z "$HS_NAMESERVERS" || grep -Eq '^ *HS_NAMESERVERS=' $CONFIGFILE || \
+            echo "HS_NAMESERVERS=" >> $CONFIGFILE
+
+
+# write config
 cp -a -f $CONFIGFILE $CONFIGFILE.tmp
-
-
-# Falls der Administrator einige Variablen geloscht
-# oder auskommentiert, aber sie dann uber Debconf
-# gesetzt hat, fuge sie dem Conffile wieder hinzu.
-#test -z "$FOO" || grep -Eq '^ *FOO=' $CONFIGFILE || \
-#    echo "FOO=" >> $CONFIGFILE
-#test -z "$BAR" || grep -Eq '^ *BAR=' $CONFIGFILE || \
-#    echo "BAR=" >> $CONFIGFILE
-
 sed -e "s/^ *LDAP_SERVER=.*/LDAP_SERVER=\"$LDAP_SERVER\"/" \
     -e "s/^ *BASEDN=.*/BASEDN=\"$BASEDN\"/" \
     -e "s/^ *LDAP_PASS=.*/LDAP_PASS=\"$LDAP_PASS\"/" \
     -e "s/^ *HS_NETWORK=.*/HS_NETWORK=\"$HS_NETWORK\"/" \
     -e "s/^ *HS_NETMASK=.*/HS_NETMASK=\"$HS_NETMASK\"/" \
+    -e "s/^ *HS_NAMESERVERS=.*/HS_NAMESERVERS=\"$HS_NAMESERVERS\"/" \
     < $CONFIGFILE > $CONFIGFILE.tmp
-
 mv -f $CONFIGFILE.tmp $CONFIGFILE
-exit 0
 
+# generate radius shared secret
 SHARED_SECRET=`pwgen -s -n 20`
+UAM_SECRET=`pwgen -s -n 20`
+# calculate network and client side ip adress
+HS_IP=`ipcalc -b ${HS_NETWORK}/${HS_NETMASK}  | grep HostMin | awk '{print $2}'`
+HS_NETWORK=`ipcalc -b ${HS_NETWORK}/${HS_NETMASK}  | grep Network | awk '{print $2}' | awk -F'/' '{print $1}'`
 
-echo "BASE DN: $BASEDN"
-echo "LDAP SERVER: $LDAP_SERVER"
-echo "LDAP_PASS: $LDAP_PASS"
-echo "SHARED_SECRET: $SHARED_SECRET"
+HS_DNS1=`echo $HS_NAMESERVERS | cut -d" " -f 1`
+HS_DNS2=`echo $HS_NAMESERVERS | cut -d" " -f 2`
 
 
-# install coovachilli
-dpkg -i /var/lib/linuxmuster-chilli/src/coova-chilli_1.3.0_i386.deb
+if [ $debug ]; then
+    echo "BASEDN: $BASEDN"
+    echo "LDAP_SERVER: $LDAP_SERVER"
+    echo "LDAP_PASS: $LDAP_PASS"
+    echo "HS_IP: $HS_IP"
+    echo "HS_NETWORK: $HS_NETWORK"
+    echo "HS_NETPASK: $HS_NETMASK"
+    echo "HS_NAMESERVERS: $HS_NAMESERVERS"
+    echo "HS_DNS1: $HS_DNS1"
+    echo "HS_DNS2: $HS_DNS2"
+    echo "not in configfile"
+    echo "SHARED_SECRET: $SHARED_SECRET"
+    echo "UAM_SECRET: $UAM_SECRET"
+fi
 
 # copying www files to apache directory
-mkdir -p /var/www/hotspot/
+mkdir -p /var/www/hotspot/cgi-bin
 cp /etc/chilli/www/* /var/www/hotspot
 
 # patching configuration files
@@ -88,16 +105,33 @@ find -type f | xargs -i -t sh -c \
     "sed -e    's%@@ldap_server@@%${LDAP_SERVER}%g
                 s%@@ldap_pass@@%${LDAP_PASS}%g
                 s%@@basedn@@%${BASEDN}%g
+                s%@@hs_network@@%${HS_NETWORK}%g
+                s%@@hs_netmask@@%${HS_NETMASK}%g
+                s%@@uam_secret@@%${UAM_SECRET}%g
+                s%@@hs_ip@@%${HS_IP}%g
+                s%@@hs_dns1@@%${HS_DNS1}%g
+                s%@@hs_dns2@@%${HS_DNS2}%g
                 s%@@shared_secret@@%${SHARED_SECRET}%g
                 s%@@serverip@@%${serverip}%g' {} > /{}" 2> /dev/null 1> /dev/null
+
 
 # ensure the permissions are correct
 chown root.freerad /etc/freeradius/clients.conf
 chmod 640 /etc/freeradius/clients.conf
-
 chmod 755 /etc/chilli/ipup.sh
+chmod a+x /var/www/hotspot/cgi-bin/hotspotlogin.cgi
 
+# apache config
+mkdir -p /etc/apache2/ssl/
+make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /etc/apache2/ssl/apache.pem
+a2enmod ssl
+a2ensite hotspot
+
+
+# restart services
 /etc/init.d/freeradius restart
+/etc/init.d/chilli restart
+/etc/init.d/apache2 restart
 
 # dh_installdeb will replace this with shell code automatically
 

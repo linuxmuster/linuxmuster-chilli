@@ -24,3 +24,8 @@ Template: linuxmuster-chilli/hs-netmask
 Type: string
 Default: 255.255.0.0
 Description: Netmask for the client side network
+
+Template: linuxmuster-chilli/hs-nameservers
+Type: string
+Default: 8.8.8.8 208.67.222.222
+Description: List of namervsers that are reachable from the external interface. White space separated, only the first two nameservers are written to the config.

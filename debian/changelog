@@ -1,9 +1,17 @@
-linuxmuster-chilli (0.1.11) precise-testing; urgency=low
+linuxmuster-chilli (0.1.14) precise-testing; urgency=low
+
+  * First working version
+
+ -- Frank Schiebel <frank@linuxmuster.net>  Mon, 24 Dec 2012 15:55:06 +0100
+
+linuxmuster-chilli (0.1.12) precise-testing; urgency=low
 
   * First commit to git
   * Installs an configures freeradius to authenticate against linuxmsuter.net
     server
   * Added coovachilli deb
   * Introduced config file for linuxmuster-chilli
+  * Added apache config
+  * Added hostspot config
 
- -- Frank Schiebel <frank@linuxmuster.net>  Sun, 23 Dec 2012 23:03:14 +0100
+ -- Frank Schiebel <frank@linuxmuster.net>  Mon, 24 Dec 2012 15:28:56 +0100
