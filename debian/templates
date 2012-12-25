@@ -29,3 +29,18 @@ Template: linuxmuster-chilli/hs-nameservers
 Type: string
 Default: 8.8.8.8 208.67.222.222
 Description: List of namervsers that are reachable from the external interface. White space separated, only the first two nameservers are written to the config.
+
+Template: linuxmuster-chilli/hs-ldapgroups
+Type: string
+Default: teachers p_wifi
+Description: List of LDAP groups whose members are allowed to acces the internet via the hotspot. White space separated.
+
+Template: linuxmuster-chilli/hs-uamallow
+Type: string
+Default: www.linuxmuster.net
+Description: List of domains which can be accessed without logging in.
+
+Template: linuxmuster-chilli/hs-heading
+Type: string
+Default: linuxmuster.net WiFi
+Description: Name of the captive portal as shown on the login page.

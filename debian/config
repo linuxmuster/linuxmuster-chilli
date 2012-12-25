@@ -29,6 +29,15 @@ if [ -e $CONFIGFILE ]; then
     if [ "$HS_NAMESERVERS" != "" ]; then
         db_set linuxmuster-chilli/hs-nameservers "$HS_NAMESERVERS"
     fi
+    if [ "$HS_LDAPGROUPS" != "" ]; then
+        db_set linuxmuster-chilli/hs-ldapgroups "$HS_LDAPGROUPS"
+    fi
+    if [ "$HS_UAMALLOW" != "" ]; then
+        db_set linuxmuster-chilli/hs-uamallow "$HS_UAMALLOW"
+    fi
+    if [ "$HS_HEADING" != "" ]; then
+        db_set linuxmuster-chilli/hs-heading "$HS_HEADING"
+    fi
 fi
 
 db_input high linuxmuster-chilli/ldap-server || true
@@ -37,4 +46,7 @@ db_input high linuxmuster-chilli/ldap-pass || true
 db_input high linuxmuster-chilli/hs-network || true
 db_input high linuxmuster-chilli/hs-netmask || true
 db_input high linuxmuster-chilli/hs-nameservers || true
+db_input high linuxmuster-chilli/hs-ldapgroups || true
+db_input high linuxmuster-chilli/hs-uamallow || true
+db_input high linuxmuster-chilli/hs-heading || true
 db_go || true

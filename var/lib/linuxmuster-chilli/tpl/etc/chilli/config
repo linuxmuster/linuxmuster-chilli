@@ -28,7 +28,7 @@ HS_DNS2=@@hs_dns2@@
 HS_NASID=nas01
 HS_RADIUS=localhost
 HS_RADIUS2=localhost
-HS_UAMALLOW=www.coova.org
+HS_UAMALLOW=@@hs_uamallow@@
 HS_RADSECRET=@@shared_secret@@    # Set to be your RADIUS shared secret
 HS_UAMSECRET=@@uam_secret@@     # Set to be your UAM secret
 HS_UAMALIASNAME=chilli
@@ -62,11 +62,11 @@ HS_WWWBIN=/etc/chilli/wwwsh
 
 #    Some configurations used in certain user interfaces
 HS_PROVIDER=Coova
-HS_PROVIDER_LINK=http://www.coova.org/
+HS_PROVIDER_LINK=http://www.linuxmuster.net/
 
 ###
 ##   WISPr RADIUS Attribute support
-HS_LOC_NAME="My HotSpot"           # WISPr Location Name and used in portal
+HS_LOC_NAME="@@hs_heading@@"           # WISPr Location Name and used in portal
 
 ###
 # setting radius auth type to pap

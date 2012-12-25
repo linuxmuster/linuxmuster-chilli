@@ -283,9 +283,7 @@ authenticate {
 	# Note that this means "check plain-text password against
 	# the ldap database", which means that EAP won't work,
 	# as it does not supply a plain-text password.
-#	Auth-Type LDAP {
-#		ldap
-#	}
+    @@ldap_group_checking_string@@
 
 	#
 	#  Allow EAP authentication.

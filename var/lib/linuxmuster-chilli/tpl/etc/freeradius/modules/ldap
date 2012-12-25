@@ -126,8 +126,8 @@ ldap {
     #
     #  Group membership checking.  Disabled by default.
     #
-    # groupname_attribute = cn
-    # groupmembership_filter = "(|(&(objectClass=GroupOfNames)(member=%{control:Ldap-UserDn}))(&(objectClass=GroupOfUniqueNames)(uniquemember=%{control:Ldap-UserDn})))"
+    groupname_attribute = cn
+    groupmembership_filter = (&(objectClass=posixGroup)(memberUid=%{Stripped-User-Name:-%{User-Name}}))
     # groupmembership_attribute = radiusGroupName
 
     # compare_check_items = yes

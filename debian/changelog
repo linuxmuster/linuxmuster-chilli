@@ -1,3 +1,12 @@
+linuxmuster-chilli (0.1.15) precise-testing; urgency=low
+
+  * Added ldap-group checking
+  * Some design improvements
+  * German language
+  * removed coova.org from uam allowed list
+
+ -- Frank Schiebel <frank@linuxmuster.net>  Tue, 25 Dec 2012 18:41:22 +0100
+
 linuxmuster-chilli (0.1.14) precise-testing; urgency=low
 
   * First working version
