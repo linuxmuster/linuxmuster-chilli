@@ -23,6 +23,11 @@ HS_DNS1=@@hs_dns1@@
 HS_DNS2=@@hs_dns2@@
 
 ###
+# allowed ports on host without auth 8080 for proxy needed
+# needs firewall rule in ipup.sh!
+HS_TCP_PORTS="80 443 8080"
+
+###
 ##   HotSpot settings for simple Captive Portal
 ##
 HS_NASID=nas01

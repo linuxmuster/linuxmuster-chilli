@@ -1,0 +1,17 @@
+/var/log/linuxmuster-chilli/*.log
+{
+        rotate 30
+        daily
+        missingok
+        notifempty
+        delaycompress
+        compress
+        postrotate
+                reload rsyslog >/dev/null 2>&1 || true
+                /etc/init.d/freeradius restart > /dev/null 2>&1 || true
+                /etc/init.d/chilli restart > /dev/null 2>&1 || true
+                /etc/init.d/ffproxy restart > /dev/null 2>&1 || true
+                /etc/init.d/apache2 restart > /dev/null 2>&1 || true
+        endscript
+}
+

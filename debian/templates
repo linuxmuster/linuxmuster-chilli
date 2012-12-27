@@ -35,6 +35,11 @@ Type: string
 Default: teachers p_wifi
 Description: List of LDAP groups whose members are allowed to acces the internet via the hotspot. White space separated.
 
+Template: linuxmuster-chilli/logging
+Type: string
+Default: yes
+Description: Should all the http client requests be logged?
+
 Template: linuxmuster-chilli/hs-uamallow
 Type: string
 Default: www.linuxmuster.net

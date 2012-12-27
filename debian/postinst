@@ -20,6 +20,7 @@ if [ ! -e $CONFIGFILE ]; then
     echo "HS_NETMASK=" >> $CONFIGFILE
     echo "HS_NAMESERVERS=" >> $CONFIGFILE
     echo "HS_LDAPGROUPS=" >> $CONFIGFILE
+    echo "LOGGING=" >> $CONFIGFILE
     echo "HS_UAMALLOW=" >> $CONFIGFILE
     echo "HS_HEADING=" >> $CONFIGFILE
 fi
@@ -59,6 +60,11 @@ if [ "$RET" ]; then
     HS_LDAPGROUPS=$RET;
 fi
 
+db_get linuxmuster-chilli/logging
+if [ "$RET" ]; then
+    LOGGING=$RET;
+fi
+
 db_get linuxmuster-chilli/hs-uamallow
 if [ "$RET" ]; then
     HS_UAMALLOW=$RET;
@@ -77,6 +83,8 @@ test -z "$HS_HEADING" || grep -Eq '^ *HS_HEADING=' $CONFIGFILE || \
             echo "HS_HEADING=" >> $CONFIGFILE
 test -z "$HS_UAMALLOW" || grep -Eq '^ *HS_UAMALLOW=' $CONFIGFILE || \
             echo "HS_UAMALLOW=" >> $CONFIGFILE
+test -z "$LOGGING" || grep -Eq '^ *LOGGING=' $CONFIGFILE || \
+            echo "LOGGING=" >> $CONFIGFILE
 
 # write config
 cp -a -f $CONFIGFILE $CONFIGFILE.tmp
@@ -87,6 +95,7 @@ sed -e "s/^ *LDAP_SERVER=.*/LDAP_SERVER=\"$LDAP_SERVER\"/" \
     -e "s/^ *HS_NETMASK=.*/HS_NETMASK=\"$HS_NETMASK\"/" \
     -e "s/^ *HS_LDAPGROUPS=.*/HS_LDAPGROUPS=\"$HS_LDAPGROUPS\"/" \
     -e "s/^ *HS_NAMESERVERS=.*/HS_NAMESERVERS=\"$HS_NAMESERVERS\"/" \
+    -e "s/^ *LOGGING=.*/LOGGING=\"$LOGGING\"/" \
     -e "s/^ *HS_UAMALLOW=.*/HS_UAMALLOW=\"$HS_UAMALLOW\"/" \
     -e "s/^ *HS_HEADING=.*/HS_HEADING=\"$HS_HEADING\"/" \
     < $CONFIGFILE > $CONFIGFILE.tmp
@@ -102,6 +111,10 @@ HS_NETWORK=`ipcalc -b ${HS_NETWORK}/${HS_NETMASK}  | grep Network | awk '{print 
 HS_DNS1=`echo $HS_NAMESERVERS | cut -d" " -f 1`
 HS_DNS2=`echo $HS_NAMESERVERS | cut -d" " -f 2`
 
+if [ $LOGGING != "yes" ]; then
+    LOGGING="no"
+fi
+
 
 if [ $debug ]; then
     echo "BASEDN: $BASEDN"
@@ -113,6 +126,8 @@ if [ $debug ]; then
     echo "HS_NAMESERVERS: $HS_NAMESERVERS"
     echo "HS_DNS1: $HS_DNS1"
     echo "HS_DNS2: $HS_DNS2"
+    echo "HS_LDAPGROUPS: $HS_LDAPGROUPS"
+    echo "LOGGING: $LOGGING"
     echo "not in configfile"
     echo "SHARED_SECRET: $SHARED_SECRET"
     echo "UAM_SECRET: $UAM_SECRET"
@@ -156,6 +171,7 @@ find -type f | xargs -i -t sh -c \
                 s%@@hs_dns1@@%${HS_DNS1}%g
                 s%@@hs_dns2@@%${HS_DNS2}%g
                 s%@@ldap_group_checking_string@@%${LDAP_GROUP_CHECKING_STRING}%g
+                s%@@logging@@%${LOGGING}%g
                 s%@@shared_secret@@%${SHARED_SECRET}%g
                 s%@@hs_uamallow@@%${HS_UAMALLOW}%g
                 s%@@hs_heading@@%${HS_HEADING}%g
@@ -178,8 +194,10 @@ a2ensite hotspot
 
 
 # restart services
+restart rsyslog
 /etc/init.d/freeradius restart
 /etc/init.d/chilli restart
+/etc/init.d/ffproxy restart
 /etc/init.d/apache2 restart
 
 # dh_installdeb will replace this with shell code automatically

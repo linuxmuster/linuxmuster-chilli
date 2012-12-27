@@ -41,6 +41,13 @@
    #Allow 3990 on other interfaces (input).
    $IPTABLES -A INPUT -p tcp -m tcp --dport 3990 --syn -j ACCEPT
 
+   # This rule prevents hosts on the subscriber network to reach the
+   # local proxy directly via port 8080
+   $IPTABLES -I PREROUTING -t mangle -p tcp -s @@hs_network@@/@@hs_netmask@@ -d @@hs_ip@@ --dport 8080 -j DROP
+   # This rule forwards all port 80 traffic to the local ffproxy for logging
+   $IPTABLES -I PREROUTING -t nat -i $TUNTAP -p tcp -s @@hs_network@@/@@hs_netmask@@ ! -d @@hs_ip@@ --dport 80 -j REDIRECT --to 8080
+
+
    #Allow everything on loopback interface.
    $IPTABLES -A INPUT -i lo -j ACCEPT
 

@@ -1,3 +1,11 @@
+linuxmuster-chilli (0.1.17) precise-testing; urgency=low
+
+  * Transparent proxy with ffproxy
+  * logrotate configured
+  * logging as config option
+
+ -- Frank Schiebel <frank@linuxmuster.net>  Thu, 27 Dec 2012 11:57:49 +0100
+
 linuxmuster-chilli (0.1.15) precise-testing; urgency=low
 
   * Added ldap-group checking
