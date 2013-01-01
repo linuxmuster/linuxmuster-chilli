@@ -69,6 +69,14 @@ HS_WWWBIN=/etc/chilli/wwwsh
 HS_PROVIDER=Coova
 HS_PROVIDER_LINK=http://www.linuxmuster.net/
 
+# Wenn im Radius kein Session Timeout definiert wurde,
+# wann fliegt der Hotspot User wieder raus (auch mitten
+# im Surfen!)
+HS_DEFSESSIONTIMEOUT=0   # In Sekunden
+
+# # Wenn nichts passiert, wann fliegt der Hotspot User raus
+HS_DEFIDLETIMEOUT=@@hs_idletimeout@@       # In Sekunden
+
 ###
 ##   WISPr RADIUS Attribute support
 HS_LOC_NAME="@@hs_heading@@"           # WISPr Location Name and used in portal

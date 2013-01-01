@@ -1,3 +1,13 @@
+linuxmuster-chilli (0.1.19) precise-testing; urgency=low
+
+  * Added option for defaut idle logout time
+  * Added the ability to add chilli options in /etc/chilli/userconf which will
+    not be affectet by linuxmuster-chilli and will override the package settings
+  * Set google public DNS servers as default
+  * Added linuxmuster-chilli-turnkey script
+
+ -- Frank Schiebel <frank@linuxmuster.net>  Tue, 01 Jan 2013 14:38:46 +0100
+
 linuxmuster-chilli (0.1.18) precise-testing; urgency=low
 
   * Transparent proxy with ffproxy

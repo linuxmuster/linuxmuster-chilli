@@ -1,0 +1,27 @@
+#!/bin/bash
+
+echo
+echo "KENNWORT"
+echo
+echo "Legen Sie zuerst ein neues Kennwort für den"
+echo "administrativen Benutzer \"coovaadmin\" fest"
+echo
+echo "Drücken Sie ENTER, wenn Sie mit der"
+echo "Passwortänderung beginnen wollen."
+read key
+
+passwd
+
+echo
+echo "KONFIGURATION"
+echo
+echo "Nun wird die Konfiguration des Hotspots via"
+echo "sudo gestartet. Geben Sie dazu auf Nachfrage"
+echo "das eben festgelegte neue Passwort an"
+echo
+echo "Drücken Sie ENTER, wenn Sie starten wollen."
+read key
+
+sudo rm -f /etc/linuxmuster-chilli.cfg
+sudo rm -f /etc/apache2/ssl/apache.pem
+sudo dpkg-reconfigure linuxmuster-chilli

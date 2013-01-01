@@ -16,6 +16,7 @@ SBIN=/usr/sbin
 
 [ -f $CHILLI/defaults ] && . $CHILLI/defaults
 [ -f $CHILLI/config ]   && . $CHILLI/config
+[ -f $CHILLI/userconf ]   && . $CHILLI/userconf
 
 [ -n "$DHCPIF" ] && [ -d "$CHILLI/$DHCPIF" ] && {
     CHILLI=$CHILLI/$DHCPIF

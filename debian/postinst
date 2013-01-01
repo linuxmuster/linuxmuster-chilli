@@ -20,6 +20,7 @@ if [ ! -e $CONFIGFILE ]; then
     echo "HS_NETMASK=" >> $CONFIGFILE
     echo "HS_NAMESERVERS=" >> $CONFIGFILE
     echo "HS_LDAPGROUPS=" >> $CONFIGFILE
+    echo "HS_IDLETIMEOUT=" >> $CONFIGFILE
     echo "LOGGING=" >> $CONFIGFILE
     echo "HS_UAMALLOW=" >> $CONFIGFILE
     echo "HS_HEADING=" >> $CONFIGFILE
@@ -60,6 +61,11 @@ if [ "$RET" ]; then
     HS_LDAPGROUPS=$RET;
 fi
 
+db_get linuxmuster-chilli/hs-idletimeout
+if [ "$RET" ]; then
+    HS_IDLETIMEOUT=$RET;
+fi
+
 db_get linuxmuster-chilli/logging
 if [ "$RET" ]; then
     LOGGING=$RET;
@@ -85,6 +91,8 @@ test -z "$HS_UAMALLOW" || grep -Eq '^ *HS_UAMALLOW=' $CONFIGFILE || \
             echo "HS_UAMALLOW=" >> $CONFIGFILE
 test -z "$LOGGING" || grep -Eq '^ *LOGGING=' $CONFIGFILE || \
             echo "LOGGING=" >> $CONFIGFILE
+test -z "$HS_IDLETIMEOUT" || grep -Eq '^ *HS_IDLETIMEOUT=' $CONFIGFILE || \
+            echo "HS_IDLETIMEOUT=" >> $CONFIGFILE
 
 # write config
 cp -a -f $CONFIGFILE $CONFIGFILE.tmp
@@ -94,6 +102,7 @@ sed -e "s/^ *LDAP_SERVER=.*/LDAP_SERVER=\"$LDAP_SERVER\"/" \
     -e "s/^ *HS_NETWORK=.*/HS_NETWORK=\"$HS_NETWORK\"/" \
     -e "s/^ *HS_NETMASK=.*/HS_NETMASK=\"$HS_NETMASK\"/" \
     -e "s/^ *HS_LDAPGROUPS=.*/HS_LDAPGROUPS=\"$HS_LDAPGROUPS\"/" \
+    -e "s/^ *HS_IDLETIMEOUT=.*/HS_IDLETIMEOUT=\"$HS_IDLETIMEOUT\"/" \
     -e "s/^ *HS_NAMESERVERS=.*/HS_NAMESERVERS=\"$HS_NAMESERVERS\"/" \
     -e "s/^ *LOGGING=.*/LOGGING=\"$LOGGING\"/" \
     -e "s/^ *HS_UAMALLOW=.*/HS_UAMALLOW=\"$HS_UAMALLOW\"/" \
@@ -111,10 +120,8 @@ HS_NETWORK=`ipcalc -b ${HS_NETWORK}/${HS_NETMASK}  | grep Network | awk '{print 
 HS_DNS1=`echo $HS_NAMESERVERS | cut -d" " -f 1`
 HS_DNS2=`echo $HS_NAMESERVERS | cut -d" " -f 2`
 
-if [ $LOGGING != "yes" ]; then
-    LOGGING="no"
-fi
-
+LOGGINGSTRING="no"
+$LOGGING && LOGGINGSTRING="yes"
 
 if [ $debug ]; then
     echo "BASEDN: $BASEDN"
@@ -127,7 +134,9 @@ if [ $debug ]; then
     echo "HS_DNS1: $HS_DNS1"
     echo "HS_DNS2: $HS_DNS2"
     echo "HS_LDAPGROUPS: $HS_LDAPGROUPS"
+    echo "HS_IDLETIMEOUT: $HS_LDAPGROUPS"
     echo "LOGGING: $LOGGING"
+    echo "LOGGINGSTRING: $LOGGINGSTRING"
     echo "not in configfile"
     echo "SHARED_SECRET: $SHARED_SECRET"
     echo "UAM_SECRET: $UAM_SECRET"
@@ -152,6 +161,7 @@ else
     LDAP_GROUP_CHECKING_STRING=$T
 fi
 
+
 # copying www files to apache directory
 mkdir -p /var/www/hotspot/cgi-bin
 cp /etc/chilli/www/* /var/www/hotspot
@@ -171,7 +181,8 @@ find -type f | xargs -i -t sh -c \
                 s%@@hs_dns1@@%${HS_DNS1}%g
                 s%@@hs_dns2@@%${HS_DNS2}%g
                 s%@@ldap_group_checking_string@@%${LDAP_GROUP_CHECKING_STRING}%g
-                s%@@logging@@%${LOGGING}%g
+                s%@@hs_idletimeout@@%${HS_IDLETIMEOUT}%g
+                s%@@logging@@%${LOGGINGSTRING}%g
                 s%@@shared_secret@@%${SHARED_SECRET}%g
                 s%@@hs_uamallow@@%${HS_UAMALLOW}%g
                 s%@@hs_heading@@%${HS_HEADING}%g
