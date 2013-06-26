@@ -11,6 +11,7 @@ dh_installdeb
 dh_gencontrol
 dh_md5sums
 dh_builddeb
+dh_builddeb
 dh_installdirs
 dh_installdebconf
 dh_installdocs
@@ -21,4 +22,5 @@ dh_fixperms
 dh_installdeb
 dh_gencontrol
 dh_md5sums
+dh_builddeb
 dh_builddeb

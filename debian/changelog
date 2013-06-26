@@ -1,3 +1,15 @@
+linuxmuster-chilli (0.1.20) precise-chilli; urgency=low
+
+  * Removed coova-chilli package from this package to allow 
+    installation directly from precise-chilli repo
+  * Changed repository target to precise-chilli
+  * Added quotes to HS_UAMALLOW option in template file 
+    for /etc/chilli/config (closes #84)
+  * Added modified start script to templates 
+    (/etc/init.d/chilli) that fixes bug #152
+
+ -- Frank Schiebel <frank@linuxmuster.net>  Wed, 26 Jun 2013 18:47:29 +0200
+
 linuxmuster-chilli (0.1.19) precise-testing; urgency=low
 
   * Added option for defaut idle logout time
