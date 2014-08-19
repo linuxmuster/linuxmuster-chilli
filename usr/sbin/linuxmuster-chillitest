@@ -1,0 +1,67 @@
+#!/bin/bash
+
+while getopts ":u:p:" opt; do
+  case $opt in
+    u)
+      TESTUSER=$OPTARG
+      ;;
+    p)
+      TESTPASS=$OPTARG
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+  esac
+done
+
+if [ "x$TESTUSER" == "x" ] || [ "x$TESTPASS" == "x" ]; then
+echo "Usage:  linuxmuster-chillitest -u <Testuser> -p <Testpass>"
+exit 1
+fi
+
+echo "Parameters:"
+echo "    username: $TESTUSER"
+echo "    password: $TESTPASS"
+echo
+
+LDAPPASS=$(grep password /etc/freeradius/modules/ldap  | grep -v ^.*# | awk -F"=" '{print $2}' | sed "s/\s//g")
+LDAPIDENTITY=$(grep identity  /etc/freeradius/modules/ldap  | grep -v ^.*# | awk -F"identity =" '{print $2}' | sed "s/\"//g" | sed "s/\s//g")
+LDAPBASEDN=$(grep basedn  /etc/freeradius/modules/ldap  | grep -v ^.*# | awk -F"basedn =" '{print $2}' | sed "s/\"//g" | sed "s/\s//g")
+LDAPIP=$(grep server  /etc/freeradius/modules/ldap  | grep -v ^.*# | awk -F"server =" '{print $2}' | sed "s/\"//g" | sed "s/\s//g")
+
+RADIUSSHAREDSECRET=$(grep secret /etc/freeradius/clients.conf | grep -v ^.*# | awk -F"=" '{print $2}' | sed "s/\s//g")
+
+echo "Config from /etc/freeradius/modules/ldap:"
+echo "    LDAP-Password: $LDAPPASS"
+echo "    LDAP-Identity: $LDAPIDENTITY"
+echo "    LDAP-BaseDN:   $LDAPBASEDN"
+echo "    LDAP-ServerIP: $LDAPIP"
+echo
+echo "Config from /etc/freeradius/clients.conf:"
+echo "    Radius shared secret: $RADIUSSHAREDSECRET"
+echo
+echo "Press key to coninue..."
+read -n 1 -s
+
+echo
+echo "Executing nmap:"
+echo "nmap $LDAPIP -p 636"
+echo
+nmap $LDAPIP -p 636
+echo
+echo "Press key to coninue..."
+read -n 1 -s
+
+echo
+echo "Executing ldapsearch:"
+echo "ldapsearch -vv  -x -w $LDAPPASS -D $LDAPIDENTITY -b $LDAPBASEDN -H ldaps://${LDAPIP}:636"
+ldapsearch -vv  -x -w $LDAPPASS -D $LDAPIDENTITY -b $LDAPBASEDN -H ldaps://${LDAPIP}:636 >> /tmp/chillitest.$$.log 2>&1 && echo "  Sucess. Results logged to /tmp/chillitest.$$.log"
+echo
+echo "Press key to coninue..."
+read -n 1 -s
+
+echo
+echo "Trying to authenticate user with given credentials:"
+echo "radtest $TESTUSER $TESTPASS 127.0.0.1 0 $RADIUSSHAREDSECRET"
+radtest $TESTUSER $TESTPASS 127.0.0.1 0 $RADIUSSHAREDSECRET
+
